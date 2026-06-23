@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - TOEFL Prep Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <header class="navbar">
+        <a href="index.html" class="logo">TOEFL Prep</a>
+        <nav class="nav-links">
+            <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" aria-label="Toggle Dark Mode">
+                <i data-lucide="moon"></i>
+            </button>
+            <a href="index.html" class="btn btn-secondary">Home</a>
+        </nav>
+    </header>
+
+    <main id="app-container">
+        <!-- Login Form -->
+        <section class="auth-container" id="login-section">
+            <h2>Welcome Back</h2>
+            <div id="login-alert" class="alert"></div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required placeholder="Enter your password">
+                </div>
+                <button type="submit" class="btn btn-primary full-width">
+                    <i data-lucide="log-in" style="width: 18px;"></i> Login
+                </button>
+            </form>
+            <a class="toggle-link" onclick="toggleForm('register')">Don't have an account? Register</a>
+        </section>
+
+        <!-- Register Form (Hidden by default) -->
+        <section class="auth-container" id="register-section" style="display: none;">
+            <h2>Create an Account</h2>
+            <div id="register-alert" class="alert"></div>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="reg-name">Full Name</label>
+                    <input type="text" id="reg-name" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">Email</label>
+                    <input type="email" id="reg-email" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Password</label>
+                    <input type="password" id="reg-password" required placeholder="Choose a secure password">
+                </div>
+                <button type="submit" class="btn btn-primary full-width">
+                    <i data-lucide="user-plus" style="width: 18px;"></i> Register
+                </button>
+            </form>
+            <a class="toggle-link" onclick="toggleForm('login')">Already have an account? Login</a>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        // Check URL params for mode
+        const urlParams = new URLSearchParams(window.location.search);
+        if(urlParams.get('mode') === 'register') {
+            toggleForm('register');
+        }
+
+        function toggleForm(formType) {
+            document.getElementById('login-alert').style.display = 'none';
+            document.getElementById('register-alert').style.display = 'none';
+            
+            if (formType === 'register') {
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('register-section').style.display = 'block';
+            } else {
+                document.getElementById('login-section').style.display = 'block';
+                document.getElementById('register-section').style.display = 'none';
+            }
+        }
+        
+        function showAlert(id, message, type) {
+            const el = document.getElementById(id);
+            el.textContent = message;
+            el.className = `alert ${type}`;
+            el.style.display = 'block';
+        }
+
+        // Real API Connections
+        const API_BASE = 'http://localhost:5000/api/auth';
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const res = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('token', data.token);
+                    window.location.href = 'dashboard.html';
+                } else {
+                    showAlert('login-alert', data.error || 'Login failed.', 'error');
+                }
+            } catch (err) {
+                // If backend is not running, we catch the error here
+                showAlert('login-alert', 'Cannot connect to server. Is the backend running?', 'error');
+            }
+        });
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const full_name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            
+            try {
+                const res = await fetch(`${API_BASE}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ full_name, email, password })
+                });
+                
+                const data = await res.json();
+                if (res.ok) {
+                    showAlert('login-alert', 'Registration successful! Please login.', 'success');
+                    toggleForm('login');
+                } else {
+                    showAlert('register-alert', data.error || 'Registration failed.', 'error');
+                }
+            } catch (err) {
+                showAlert('register-alert', 'Cannot connect to server. Is the backend running?', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

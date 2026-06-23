@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOEFL Prep Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <header class="navbar">
+        <a href="index.html" class="logo">TOEFL Prep</a>
+        <nav class="nav-links">
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+            
+            <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" aria-label="Toggle Dark Mode">
+                <i data-lucide="moon"></i>
+            </button>
+            
+            <a href="auth.html" class="btn btn-secondary">Login</a>
+        </nav>
+    </header>
+
+    <main id="app-container">
+        <section class="hero">
+            <h1>Master the TOEFL Exam</h1>
+            <p>Comprehensive practice, instant auto-scoring, and expert feedback all in one seamless platform.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="auth.html?mode=register" class="btn btn-primary">
+                    <i data-lucide="rocket" style="width: 18px;"></i>
+                    Sign up for free
+                </a>
+                <a href="auth.html?mode=login" class="btn btn-outline">
+                    <i data-lucide="key" style="width: 18px;"></i>
+                    Redeem Code
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

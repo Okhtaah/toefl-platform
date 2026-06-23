@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <header class="navbar">
+        <a href="index.html" class="logo">TOEFL Prep</a>
+        <nav class="nav-links">
+            <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" aria-label="Toggle Dark Mode">
+                <i data-lucide="moon"></i>
+            </button>
+            <a href="index.html" class="btn btn-secondary" onclick="localStorage.removeItem('token')">
+                <i data-lucide="log-out" style="width: 18px;"></i> Logout
+            </a>
+        </nav>
+    </header>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="#" class="sidebar-link active"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+                <a href="#" class="sidebar-link"><i data-lucide="book-open"></i> Courses</a>
+                <a href="#" class="sidebar-link"><i data-lucide="pencil"></i> Practice Area</a>
+                <a href="#" class="sidebar-link"><i data-lucide="bar-chart-2"></i> My Scores</a>
+                <a href="#" class="sidebar-link"><i data-lucide="message-circle"></i> Messages</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
+            <div class="dashboard-header">
+                <div>
+                    <h2>Welcome back!</h2>
+                    <p style="color: var(--text-muted)">Continue your TOEFL preparation journey.</p>
+                </div>
+                <button class="btn btn-primary" onclick="openModal()">
+                    <i data-lucide="key"></i> Redeem Access Code
+                </button>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3><i data-lucide="unlock" style="color: var(--primary-color)"></i> My Access</h3>
+                    <ul style="list-style-type: none;" id="access-list">
+                        <li style="margin-bottom: 0.8rem; display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="check-circle-2" style="color: #10b981; width: 18px;"></i> 
+                            Free Content (Always unlocked)
+                        </li>
+                        <li style="margin-bottom: 0.8rem; display: flex; align-items: center; gap: 8px; color: var(--text-muted);">
+                            <i data-lucide="lock" style="width: 18px;"></i> 
+                            Full TOEFL Course (Locked)
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3><i data-lucide="zap" style="color: var(--primary-color)"></i> Quick Actions</h3>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <button class="btn btn-secondary full-width">Start Mock Test</button>
+                        <button class="btn btn-secondary full-width">Practice by Section</button>
+                        <button class="btn btn-secondary full-width">Review My Answers</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><i data-lucide="trending-up" style="color: var(--primary-color)"></i> Recent Scores</h3>
+                    <div style="text-align: center; padding: 2rem 0; color: var(--text-muted);">
+                        <i data-lucide="clipboard-list" style="width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p>No tests taken yet.<br>Start practicing to see your progress!</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Custom HTML Modal (No more popups) -->
+    <div class="modal-overlay" id="redeem-modal">
+        <div class="modal">
+            <h2>Redeem Code</h2>
+            <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Enter your access code to unlock premium courses, tasks, or materials.</p>
+            
+            <div id="modal-alert" class="alert"></div>
+            
+            <div class="form-group">
+                <input type="text" id="access-code-input" placeholder="e.g. TOEFL-READING-2026" autocomplete="off">
+            </div>
+            
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitCode()">Unlock Access</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Check Auth Status on load
+        if(!localStorage.getItem('token')) {
+            window.location.href = 'auth.html';
+        }
+
+        // Modal Logic
+        const modal = document.getElementById('redeem-modal');
+        function openModal() {
+            modal.classList.add('active');
+            document.getElementById('access-code-input').focus();
+            document.getElementById('modal-alert').style.display = 'none';
+        }
+        function closeModal() {
+            modal.classList.remove('active');
+            document.getElementById('access-code-input').value = '';
+        }
+
+        async function submitCode() {
+            const code = document.getElementById('access-code-input').value;
+            const alertBox = document.getElementById('modal-alert');
+            
+            if(!code) return;
+
+            try {
+                const res = await fetch('http://localhost:5000/api/codes/redeem', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-auth-token': localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({ code })
+                });
+
+                const data = await res.json();
+                
+                if(res.ok) {
+                    alertBox.textContent = `Success! ${data.access} unlocked.`;
+                    alertBox.className = 'alert success';
+                    alertBox.style.display = 'block';
+                    
+                    // Add to UI visually
+                    const list = document.getElementById('access-list');
+                    list.innerHTML += `
+                        <li style="margin-bottom: 0.8rem; display: flex; align-items: center; gap: 8px; color: #10b981;">
+                            <i data-lucide="unlock" style="width: 18px;"></i> 
+                            Premium Material (Code: ${code})
+                        </li>`;
+                    lucide.createIcons();
+                    
+                    setTimeout(() => closeModal(), 1500);
+                } else {
+                    alertBox.textContent = data.error || 'Failed to redeem code';
+                    alertBox.className = 'alert error';
+                    alertBox.style.display = 'block';
+                }
+            } catch(e) {
+                alertBox.textContent = 'Connection error. Ensure backend is running.';
+                alertBox.className = 'alert error';
+                alertBox.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
