@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - TOEFL Prep</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .dashboard-layout {
+            display: flex;
+            min-height: calc(100vh - 75px);
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 1rem;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: var(--primary-color);
+            color: var(--bg-secondary);
+        }
+
+        .admin-content {
+            flex: 1;
+            padding: 3rem 4rem;
+            background-color: var(--bg-main);
+            overflow-y: auto;
+        }
+
+        .badge-danger {
+            background-color: #ef4444;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Submissions Table */
+        .submissions-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-top: 1.5rem;
+        }
+
+        .submissions-table th, .submissions-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .submissions-table th {
+            background-color: var(--bg-main);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .submissions-table tr:hover td {
+            background-color: rgba(148, 189, 255, 0.05);
+        }
+
+        .submissions-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .status-pending { background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .status-graded { background-color: rgba(16, 185, 129, 0.1); color: #10b981; }
+
+        /* Grading View Overlay */
+        .grading-view {
+            display: none;
+            position: fixed;
+            top: 75px; left: 0; right: 0; bottom: 0;
+            background-color: var(--bg-main);
+            z-index: 50;
+            overflow-y: auto;
+            padding: 3rem;
+        }
+
+        .grading-view.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .grading-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .grading-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .grading-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .student-work-card {
+            background-color: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .eval-card {
+            background-color: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--primary-color);
+            position: sticky;
+            top: 2rem;
+        }
+
+        .score-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin-top: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .score-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        textarea.feedback-input {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            resize: vertical;
+            margin-top: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <a href="dashboard.html" class="logo">TOEFL Prep</a>
+            <span style="background-color: #ef4444; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; letter-spacing: 1px;">ADMIN PORTAL</span>
+        </div>
+        <nav class="nav-links">
+            <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" aria-label="Toggle Dark Mode">
+                <i data-lucide="moon"></i>
+            </button>
+            <a href="dashboard.html" class="btn btn-outline">Exit Admin</a>
+        </nav>
+    </header>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="#" class="sidebar-link active"><i data-lucide="inbox"></i> Pending Grading <span class="badge-danger">3</span></a>
+                <a href="#" class="sidebar-link"><i data-lucide="users"></i> Manage Users</a>
+                <a href="#" class="sidebar-link"><i data-lucide="key"></i> Access Codes</a>
+                <a href="#" class="sidebar-link"><i data-lucide="message-square"></i> Student Messages</a>
+                <a href="#" class="sidebar-link"><i data-lucide="settings"></i> Platform Settings</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content (Submissions List) -->
+        <main class="admin-content" id="submissions-list-view">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2>Pending Submissions</h2>
+                    <p style="color: var(--text-muted); margin-top: 4px;">Review and grade student Writing and Speaking tasks.</p>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <input type="text" placeholder="Search students..." style="padding: 10px 16px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-secondary); color: var(--text-main);">
+                    <button class="btn btn-outline"><i data-lucide="filter" style="width: 16px;"></i> Filter</button>
+                </div>
+            </div>
+
+            <table class="submissions-table">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Exam Section</th>
+                        <th>Task Type</th>
+                        <th>Submitted At</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-weight: 600;">Alex Johnson</td>
+                        <td>Writing</td>
+                        <td>Academic Discussion</td>
+                        <td style="color: var(--text-muted);">2 hours ago</td>
+                        <td><span class="status-badge status-pending">Needs Grading</span></td>
+                        <td><button class="btn btn-primary" style="padding: 6px 12px; font-size: 13px;" onclick="openGrading('writing')">Grade Now</button></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 600;">Maria Garcia</td>
+                        <td>Speaking</td>
+                        <td>Independent Speaking</td>
+                        <td style="color: var(--text-muted);">5 hours ago</td>
+                        <td><span class="status-badge status-pending">Needs Grading</span></td>
+                        <td><button class="btn btn-primary" style="padding: 6px 12px; font-size: 13px;" onclick="openGrading('speaking')">Grade Now</button></td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 600;">David Smith</td>
+                        <td>Speaking</td>
+                        <td>Listen and Repeat</td>
+                        <td style="color: var(--text-muted);">Yesterday</td>
+                        <td><span class="status-badge status-graded">Graded (28/30)</span></td>
+                        <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 13px;">View</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+
+        <!-- Grading View Overlay -->
+        <div class="grading-view" id="grading-view">
+            <div class="grading-container">
+                <div class="grading-header">
+                    <div>
+                        <button class="btn btn-outline" style="margin-bottom: 1rem; padding: 6px 12px;" onclick="closeGrading()">
+                            <i data-lucide="arrow-left" style="width: 16px;"></i> Back to List
+                        </button>
+                        <h2 id="grade-student-name">Alex Johnson</h2>
+                        <p style="color: var(--text-muted);" id="grade-task-type">Writing: Academic Discussion</p>
+                    </div>
+                </div>
+
+                <div class="grading-grid">
+                    <!-- Left: Student Work -->
+                    <div>
+                        <!-- Writing Work -->
+                        <div class="student-work-card" id="work-writing" style="display: none;">
+                            <h3 style="margin-bottom: 1rem; color: var(--text-muted); font-size: 14px; text-transform: uppercase;">The Prompt</h3>
+                            <div style="padding: 1rem; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 2rem;">
+                                "Do you think university education should be free for everyone? Explain your reasoning."
+                            </div>
+                            
+                            <h3 style="margin-bottom: 1rem; color: var(--text-muted); font-size: 14px; text-transform: uppercase;">Student's Essay</h3>
+                            <div style="padding: 1.5rem; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; line-height: 1.8; font-family: var(--font-reading);">
+                                I firmly believe that university education should be completely free for everyone, regardless of their socioeconomic background. Education is a fundamental human right, not a privilege reserved for the wealthy. When education is commodified, we lose out on the immense potential of brilliant minds who simply cannot afford the exorbitant tuition fees.<br><br>
+                                Furthermore, a highly educated populace benefits society as a whole. It leads to greater innovation, higher economic stability, and a more informed democratic process. While some argue that free education would increase taxes, I believe the long-term return on investment far outweighs the initial costs.
+                            </div>
+                            <div style="text-align: right; margin-top: 0.5rem; color: var(--text-muted); font-size: 14px;">Word count: 104</div>
+                        </div>
+
+                        <!-- Speaking Work -->
+                        <div class="student-work-card" id="work-speaking" style="display: none;">
+                            <h3 style="margin-bottom: 1rem; color: var(--text-muted); font-size: 14px; text-transform: uppercase;">The Prompt</h3>
+                            <div style="padding: 1rem; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 2rem;">
+                                "Some people prefer to study alone, while others prefer to study in groups. Which do you prefer and why?"
+                            </div>
+
+                            <h3 style="margin-bottom: 1rem; color: var(--text-muted); font-size: 14px; text-transform: uppercase;">Student's Audio Recording</h3>
+                            <div style="padding: 2rem; background-color: var(--bg-main); border: 1px solid var(--border-color); border-radius: 8px; text-align: center;">
+                                <i data-lucide="mic" style="width: 48px; height: 48px; color: var(--primary-color); margin-bottom: 1.5rem;"></i>
+                                <br>
+                                <audio controls style="width: 100%;">
+                                    <source src="#" type="audio/mpeg">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Evaluation Box -->
+                    <div>
+                        <div class="eval-card">
+                            <h3 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 8px;">
+                                <i data-lucide="check-square" style="color: var(--primary-color);"></i> Official Evaluation
+                            </h3>
+                            
+                            <label style="font-weight: 600; color: var(--text-muted); display: block;">Score (0 - 30)</label>
+                            <input type="number" class="score-input" min="0" max="30" placeholder="e.g. 26">
+                            
+                            <label style="font-weight: 600; color: var(--text-muted); display: block;">Instructor Feedback</label>
+                            <textarea class="feedback-input" placeholder="Provide detailed feedback on grammar, vocabulary, pronunciation (if applicable), and topic development..."></textarea>
+                            
+                            <button class="btn btn-primary full-width" onclick="submitGrade()">
+                                <i data-lucide="send" style="width: 18px;"></i> Submit Grade & Notify Student
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="app.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
