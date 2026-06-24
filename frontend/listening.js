@@ -128,7 +128,7 @@ function submitSection() {
             <i data-lucide="check-circle" style="width: 64px; height: 64px; color: #10b981; margin-bottom: 1rem;"></i>
             <h1 style="margin-bottom: 1rem;">Listening Section Completed!</h1>
             <p style="color: var(--text-muted); margin-bottom: 2rem;">Moving you to the Writing Section...</p>
-            <a href="dashboard.html" class="btn btn-primary">Return to Dashboard</a>
+            <a href="writing.html" class="btn btn-primary">Start Writing Section</a>
         </div>
     `;
     lucide.createIcons();

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speaking Exam - TOEFL Prep</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .exam-layout {
+            padding: 3rem;
+            background-color: var(--bg-main);
+            min-height: calc(100vh - 75px);
+            display: flex;
+            justify-content: center;
+        }
+
+        .exam-container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .prompt-card {
+            background-color: var(--bg-secondary);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            width: 100%;
+            text-align: center;
+        }
+
+        .mic-container {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: var(--bg-main);
+            border: 4px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2rem auto;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .mic-container i {
+            color: var(--text-muted);
+            transition: color 0.3s ease;
+        }
+
+        .mic-container.recording {
+            border-color: #ef4444;
+            animation: pulse-border 1.5s infinite;
+        }
+
+        .mic-container.recording i {
+            color: #ef4444;
+        }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .status-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .countdown {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 2rem;
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <a href="dashboard.html" class="logo">TOEFL Prep</a>
+        <div style="font-weight: 600; color: var(--text-muted);">Section 4: Speaking</div>
+        <nav class="nav-links">
+            <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" aria-label="Toggle Dark Mode">
+                <i data-lucide="moon"></i>
+            </button>
+            <button class="btn btn-outline" onclick="quitExam()">Quit Exam</button>
+        </nav>
+    </header>
+
+    <main class="exam-layout">
+        <div class="exam-container" id="exam-container">
+            <!-- Content injected by JS -->
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    <script src="speaking.js"></script>
+</body>
+</html>
