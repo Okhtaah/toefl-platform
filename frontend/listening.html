@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listening Exam - TOEFL Prep</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .listening-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 75px);
+            padding: 2rem;
+            background-color: var(--bg-main);
+        }
+        
+        .exam-header {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .timer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 18px;
+            color: #e53e3e;
+            background: rgba(229, 62, 62, 0.1);
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+        
+        .audio-player-card {
+            background-color: var(--bg-secondary);
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+
+        .audio-waves {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            height: 60px;
+            margin: 2rem 0;
+        }
+
+        .wave {
+            width: 8px;
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 4px;
+            animation: bounce 1.2s ease-in-out infinite;
+        }
+
+        .wave:nth-child(2) { animation-delay: 0.1s; }
+        .wave:nth-child(3) { animation-delay: 0.2s; }
+        .wave:nth-child(4) { animation-delay: 0.3s; }
+        .wave:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 100% { transform: scaleY(0.3); }
+            50% { transform: scaleY(1); }
+        }
+
+        .audio-paused .wave {
+            animation-play-state: paused;
+            transform: scaleY(0.1);
+        }
+
+        .question-card {
+            background-color: var(--bg-secondary);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            display: none; /* Hidden until audio finishes */
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .options-list {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+        
+        .option-item {
+            margin-bottom: 1rem;
+        }
+        
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-main);
+        }
+        
+        .option-label:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(148, 189, 255, 0.05);
+        }
+        
+        input[type="radio"]:checked + .option-label {
+            border-color: var(--primary-color);
+            background-color: rgba(148, 189, 255, 0.1);
+            box-shadow: 0 0 0 1px var(--primary-color);
+        }
+
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <a href="dashboard.html" class="logo">TOEFL Prep</a>
+        <div style="font-weight: 600; color: var(--text-muted);">Section 2: Listening</div>
+        <nav class="nav-links">
+            <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" aria-label="Toggle Dark Mode">
+                <i data-lucide="moon"></i>
+            </button>
+            <button class="btn btn-outline" onclick="quitExam()">Quit Exam</button>
+        </nav>
+    </header>
+
+    <main class="listening-layout">
+        
+        <div class="exam-header">
+            <div>
+                <span style="font-weight: 600; font-size: 14px; color: var(--text-muted); text-transform: uppercase;" id="task-title">Task 2: Conversation</span>
+                <div style="font-size: 14px; margin-top: 4px;">Question <span id="current-q-num">1</span> of <span id="total-q-num">2</span></div>
+            </div>
+            <div class="timer" id="exam-timer" style="display: none;">
+                <i data-lucide="clock" style="width: 20px;"></i>
+                <span id="time-display">00:20</span>
+            </div>
+        </div>
+
+        <!-- Audio Player Visuals -->
+        <div class="audio-player-card" id="audio-player">
+            <h2>Listen carefully.</h2>
+            <p style="color: var(--text-muted); margin-top: 0.5rem;">The audio will play exactly ONCE.</p>
+            
+            <div class="audio-waves audio-paused" id="waves">
+                <div class="wave"></div><div class="wave"></div><div class="wave"></div><div class="wave"></div><div class="wave"></div>
+            </div>
+
+            <button class="btn btn-primary" id="start-audio-btn" onclick="startAudio()">
+                <i data-lucide="play" style="width: 18px;"></i> Play Audio
+            </button>
+        </div>
+
+        <!-- Question Section -->
+        <div class="question-card" id="question-card">
+            <!-- Injected via JS -->
+        </div>
+
+    </main>
+
+    <script src="app.js"></script>
+    <script src="listening.js"></script>
+</body>
+</html>

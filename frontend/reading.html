@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Exam - TOEFL Prep</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .exam-layout {
+            display: flex;
+            height: calc(100vh - 75px);
+            overflow: hidden;
+        }
+        
+        .passage-section {
+            flex: 1;
+            padding: 2rem 3rem;
+            background-color: var(--bg-main);
+            overflow-y: auto;
+            border-right: 1px solid var(--border-color);
+            font-family: var(--font-reading);
+            line-height: 1.8;
+            font-size: 16px;
+        }
+        
+        .question-section {
+            flex: 1;
+            padding: 2rem 3rem;
+            background-color: var(--bg-secondary);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .timer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 18px;
+            color: #e53e3e;
+            background: rgba(229, 62, 62, 0.1);
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+        
+        .question-block {
+            flex: 1;
+        }
+        
+        .options-list {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+        
+        .option-item {
+            margin-bottom: 1rem;
+        }
+        
+        .option-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-main);
+        }
+        
+        .option-label:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(148, 189, 255, 0.05);
+        }
+        
+        input[type="radio"]:checked + .option-label {
+            border-color: var(--primary-color);
+            background-color: rgba(148, 189, 255, 0.1);
+            box-shadow: 0 0 0 1px var(--primary-color);
+        }
+        
+        .exam-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        /* Complete the words task styling */
+        .blanks-sentence {
+            font-size: 18px;
+            line-height: 2;
+        }
+        .blank-input {
+            width: 80px;
+            border: none;
+            border-bottom: 2px solid var(--text-main);
+            background: transparent;
+            color: var(--text-main);
+            font-size: 18px;
+            text-align: center;
+            font-family: var(--font-main);
+            font-weight: 600;
+        }
+        .blank-input:focus {
+            outline: none;
+            border-bottom-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <a href="dashboard.html" class="logo">TOEFL Prep</a>
+        <div style="font-weight: 600; color: var(--text-muted);">Section 1: Reading</div>
+        <nav class="nav-links">
+            <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" aria-label="Toggle Dark Mode">
+                <i data-lucide="moon"></i>
+            </button>
+            <button class="btn btn-outline" onclick="quitExam()">Quit Exam</button>
+        </nav>
+    </header>
+
+    <main class="exam-layout">
+        <!-- Left: Reading Passage -->
+        <section class="passage-section">
+            <h2 style="font-family: var(--font-main);">The Evolution of Deep Sea Exploration</h2>
+            <p style="margin-bottom: 1.5rem; text-indent: 2rem;">For centuries, the deepest parts of the ocean remained an absolute mystery to humanity. The crushing pressure, total darkness, and near-freezing temperatures made it impossible for early explorers to descend more than a few dozen meters. It wasn't until the mid-20th century, with the invention of the bathyscaphe, that humans could finally reach the abyssal zones. These early submersibles were incredibly rudimentary compared to modern technology, relying on massive floats filled with gasoline for buoyancy and heavy iron shot for ballast.</p>
+            
+            <p style="margin-bottom: 1.5rem; text-indent: 2rem;">Modern deep-sea exploration, however, has been revolutionized by Remotely Operated Vehicles (ROVs). Unlike their manned predecessors, ROVs do not require heavy life-support systems, allowing them to remain submerged for days at a time. They are equipped with high-definition cameras, sensitive manipulator arms, and complex sonar arrays. This technology has enabled scientists to map deep-ocean trenches, discover entire ecosystems thriving around hydrothermal vents, and collect specimens that have fundamentally altered our understanding of biology.</p>
+            
+            <p style="text-indent: 2rem;">Despite these advancements, less than twenty percent of the ocean floor has been mapped at high resolution. The sheer vastness of the marine environment means that deep-sea exploration will continue to challenge engineers and marine biologists for generations to come. The financial constraints of launching these expeditions, combined with the extreme physical demands placed on equipment, ensure that progress, while steady, remains painstakingly slow.</p>
+        </section>
+
+        <!-- Right: Questions -->
+        <section class="question-section">
+            <div class="exam-header">
+                <div>
+                    <span style="font-weight: 600; font-size: 14px; color: var(--text-muted); text-transform: uppercase;">Task 3: Academic Passage</span>
+                    <div style="font-size: 14px; margin-top: 4px;">Question <span id="current-q-num">1</span> of <span id="total-q-num">5</span></div>
+                </div>
+                <div class="timer" id="exam-timer">
+                    <i data-lucide="clock" style="width: 20px;"></i>
+                    <span id="time-display">18:00</span>
+                </div>
+            </div>
+
+            <div class="question-block" id="question-container">
+                <!-- Injected via JS -->
+            </div>
+
+            <div class="exam-footer">
+                <button class="btn btn-secondary" id="btn-back" onclick="navigate(-1)" disabled>
+                    <i data-lucide="arrow-left" style="width: 18px;"></i> Back
+                </button>
+                <button class="btn btn-primary" id="btn-next" onclick="navigate(1)">
+                    Next <i data-lucide="arrow-right" style="width: 18px;"></i>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script src="reading.js"></script>
+</body>
+</html>

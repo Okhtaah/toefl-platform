@@ -2,9 +2,9 @@
     --primary-color: #1A1A66; /* Deep Navy */
     --secondary-color: #94bdff; /* Light Blue */
     --text-main: #111111;
-    --text-muted: #666666;
-    --bg-main: #ffffff;
-    --bg-secondary: #f7f9fc;
+    --text-muted: #4a5568;
+    --bg-main: #f8fafc; /* Very soft light blue/grey */
+    --bg-secondary: #ffffff; /* White cards */
     --border-color: #e2e8f0;
     
     --font-main: 'Open Sans', sans-serif;
@@ -12,13 +12,13 @@
 }
 
 :root[data-theme="dark"] {
-    --primary-color: #94bdff; /* Keep accents light blue for visibility */
+    --primary-color: #94bdff; /* Light Blue */
     --secondary-color: #1A1A66; /* Deep Navy */
-    --text-main: #ffffff;
+    --text-main: #f8fafc;
     --text-muted: #a0aec0;
-    --bg-main: #000000; /* True Black as requested */
-    --bg-secondary: #1A1A66; /* Dark blue for cards/navbar */
-    --border-color: #000000;
+    --bg-main: #0B0B19; /* Very dark rich blue/black */
+    --bg-secondary: #1A1A66; /* Deep navy cards */
+    --border-color: #2d3748;
     
     --font-main: 'Open Sans', sans-serif;
     --font-reading: 'Merriweather', serif;
