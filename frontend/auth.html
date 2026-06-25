@@ -111,7 +111,11 @@
                 const data = await res.json();
                 if (res.ok) {
                     localStorage.setItem('token', data.token);
-                    window.location.href = 'dashboard.html';
+                    if (data.user.role === 'ADMIN') {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
                 } else {
                     showAlert('login-alert', data.error || 'Login failed.', 'error');
                 }

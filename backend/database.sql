@@ -19,10 +19,13 @@ CREATE TABLE Users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TYPE course_type_enum AS ENUM ('MOCK_EXAM', 'PRACTICE_SECTION', 'MATERIAL');
+
 CREATE TABLE Courses (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title VARCHAR(255) NOT NULL,
     description TEXT,
+    course_type course_type_enum DEFAULT 'MOCK_EXAM',
     is_published BOOLEAN DEFAULT FALSE
 );
 
@@ -41,6 +44,7 @@ CREATE TABLE Tasks (
     task_type task_category NOT NULL,
     instructions TEXT,
     time_limit_seconds INT,
+    alert_time_seconds INT,
     task_order INT NOT NULL
 );
 

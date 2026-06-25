@@ -10,8 +10,17 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/codes', require('./routes/codes'));
+const authRoutes = require('./routes/auth');
+const codeRoutes = require('./routes/codes');
+const adminRoutes = require('./routes/admin');
+const userRoutes = require('./routes/user');
+const examsRoutes = require('./routes/exams');
+
+app.use('/api/auth', authRoutes);
+app.use('/api/codes', codeRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/exams', examsRoutes);
  
 // Basic Route
 app.get('/api/health', (req, res) => {

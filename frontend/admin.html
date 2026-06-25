@@ -212,34 +212,27 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <nav class="sidebar-nav">
-                <a href="#" class="sidebar-link active"><i data-lucide="inbox"></i> Pending Grading <span class="badge-danger">3</span></a>
-                <a href="#" class="sidebar-link"><i data-lucide="users"></i> Manage Users</a>
-                <a href="#" class="sidebar-link"><i data-lucide="key"></i> Access Codes</a>
-                <a href="#" class="sidebar-link"><i data-lucide="message-square"></i> Student Messages</a>
-                <a href="#" class="sidebar-link"><i data-lucide="settings"></i> Platform Settings</a>
+                <a href="#" class="sidebar-link active" onclick="switchTab('submissions')"><i data-lucide="inbox"></i> Pending Grading <span class="badge-danger">3</span></a>
+                <a href="#" class="sidebar-link" onclick="switchTab('users')"><i data-lucide="users"></i> Manage Users</a>
+                <a href="#" class="sidebar-link" onclick="switchTab('builder')"><i data-lucide="hammer"></i> Exam Builder</a>
             </nav>
         </aside>
 
-        <!-- Main Content (Submissions List) -->
-        <main class="admin-content" id="submissions-list-view">
+        <!-- Submissions Tab -->
+        <main class="admin-content tab-content" id="submissions-tab">
+            <!-- (Existing Submissions Content Remains Here, omitted for brevity, but I need to include the actual table if I replace the whole block) -->
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <h2>Pending Submissions</h2>
                     <p style="color: var(--text-muted); margin-top: 4px;">Review and grade student Writing and Speaking tasks.</p>
                 </div>
-                <div style="display: flex; gap: 1rem;">
-                    <input type="text" placeholder="Search students..." style="padding: 10px 16px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-secondary); color: var(--text-main);">
-                    <button class="btn btn-outline"><i data-lucide="filter" style="width: 16px;"></i> Filter</button>
-                </div>
             </div>
-
             <table class="submissions-table">
                 <thead>
                     <tr>
                         <th>Student Name</th>
                         <th>Exam Section</th>
                         <th>Task Type</th>
-                        <th>Submitted At</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -249,28 +242,61 @@
                         <td style="font-weight: 600;">Alex Johnson</td>
                         <td>Writing</td>
                         <td>Academic Discussion</td>
-                        <td style="color: var(--text-muted);">2 hours ago</td>
                         <td><span class="status-badge status-pending">Needs Grading</span></td>
                         <td><button class="btn btn-primary" style="padding: 6px 12px; font-size: 13px;" onclick="openGrading('writing')">Grade Now</button></td>
                     </tr>
-                    <tr>
-                        <td style="font-weight: 600;">Maria Garcia</td>
-                        <td>Speaking</td>
-                        <td>Independent Speaking</td>
-                        <td style="color: var(--text-muted);">5 hours ago</td>
-                        <td><span class="status-badge status-pending">Needs Grading</span></td>
-                        <td><button class="btn btn-primary" style="padding: 6px 12px; font-size: 13px;" onclick="openGrading('speaking')">Grade Now</button></td>
-                    </tr>
-                    <tr>
-                        <td style="font-weight: 600;">David Smith</td>
-                        <td>Speaking</td>
-                        <td>Listen and Repeat</td>
-                        <td style="color: var(--text-muted);">Yesterday</td>
-                        <td><span class="status-badge status-graded">Graded (28/30)</span></td>
-                        <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 13px;">View</button></td>
-                    </tr>
                 </tbody>
             </table>
+        </main>
+
+        <!-- Manage Users Tab -->
+        <main class="admin-content tab-content" id="users-tab" style="display: none;">
+            <h2>Manage Users</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">View all registered users and manage their roles.</p>
+            
+            <table class="submissions-table">
+                <thead>
+                    <tr>
+                        <th>Full Name</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="users-table-body">
+                    <!-- Injected via JS -->
+                </tbody>
+            </table>
+        </main>
+
+        <!-- Exam Builder Tab -->
+        <main class="admin-content tab-content" id="builder-tab" style="display: none;">
+            <h2>Exam Builder</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Create dynamic tests, practices, and materials.</p>
+            
+            <div style="background-color: var(--bg-secondary); padding: 2rem; border-radius: 12px; border: 1px solid var(--border-color); max-width: 600px;">
+                <h3 style="margin-bottom: 1.5rem;">Create New Block</h3>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Type</label>
+                    <select id="build-type" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--bg-main); color: var(--text-main);">
+                        <option value="MOCK_EXAM">Full Mock Exam</option>
+                        <option value="PRACTICE_SECTION">Practice Section (e.g. Reading only)</option>
+                        <option value="MATERIAL">Study Material (PDF)</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Title</label>
+                    <input type="text" id="build-title" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--bg-main); color: var(--text-main);" placeholder="e.g. Reading Practice Test 1">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Global Time Limit (Minutes)</label>
+                    <input type="number" id="build-time" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--bg-main); color: var(--text-main);" placeholder="e.g. 18">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Alert Time Remaining (Minutes)</label>
+                    <input type="number" id="build-alert" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--bg-main); color: var(--text-main);" placeholder="e.g. 5">
+                </div>
+                <button class="btn btn-primary full-width" onclick="createCourse()"><i data-lucide="plus"></i> Create Block</button>
+            </div>
         </main>
 
         <!-- Grading View Overlay -->

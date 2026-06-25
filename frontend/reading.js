@@ -1,143 +1,140 @@
-// Simulated Data for Reading Section
-const questions = [
-    {
-        id: 1,
-        type: 'mcq',
-        prompt: 'According to paragraph 1, what made early deep-sea exploration impossible?',
-        options: [
-            'A lack of scientific interest in marine biology.',
-            'The inability to build ships large enough to carry heavy equipment.',
-            'Crushing pressure, total darkness, and freezing temperatures.',
-            'The high cost of gasoline required for bathyscaphes.'
-        ]
-    },
-    {
-        id: 2,
-        type: 'mcq',
-        prompt: 'The word "rudimentary" in paragraph 1 is closest in meaning to:',
-        options: [
-            'Complex',
-            'Basic',
-            'Expensive',
-            'Dangerous'
-        ]
-    },
-    {
-        id: 3,
-        type: 'complete_words',
-        prompt: 'Complete the sentence based on paragraph 2:',
-        sentence: 'Unlike their manned predecessors, ROVs do not require heavy <input type="text" class="blank-input" data-answer="life-support" autocomplete="off"> systems, allowing them to remain submerged for days at a time.'
-    }
-];
-
+let questions = [];
 let currentIndex = 0;
-let timeRemaining = 18 * 60; // 18 minutes in seconds
+let answers = {}; 
+let timeLimit = 0;
+let alertLimit = 0;
 let timerInterval;
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('total-q-num').textContent = questions.length;
+    lucide.createIcons();
+    fetchExamData();
+});
+
+async function fetchExamData() {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseId = urlParams.get('course_id') || 1; // Default to 1 if not provided
+        const token = localStorage.getItem('token');
+        
+        const res = await fetch(`http://localhost:5000/api/exams/${courseId}`, {
+            headers: { 'x-auth-token': token }
+        });
+        
+        if(!res.ok) throw new Error('Failed to load exam data');
+        
+        const data = await res.json();
+        const task = data.tasks[0]; // Assuming 1 task for simplicity right now
+        
+        document.getElementById('pre-test-title').textContent = data.title;
+        document.getElementById('pre-test-time').textContent = Math.floor(task.time_limit_seconds / 60);
+        document.getElementById('pre-test-alert').textContent = task.alert_time_seconds ? Math.floor(task.alert_time_seconds / 60) : '--';
+        
+        timeLimit = task.time_limit_seconds;
+        alertLimit = task.alert_time_seconds;
+        questions = task.questions;
+        
+        document.getElementById('passage-title').textContent = task.title;
+        document.getElementById('passage-content').innerHTML = `<p>${task.passage}</p>`;
+        
+        document.getElementById('total-q-num').textContent = questions.length;
+        
+        const startBtn = document.getElementById('start-exam-btn');
+        startBtn.textContent = 'Start Exam';
+        startBtn.disabled = false;
+        
+    } catch(err) {
+        console.error(err);
+        document.getElementById('pre-test-title').textContent = "Error loading exam";
+    }
+}
+
+function startActualExam() {
+    document.getElementById('pre-test-screen').style.display = 'none';
+    document.getElementById('exam-view').style.display = 'flex';
     renderQuestion();
     startTimer();
-});
+}
+
+function startTimer() {
+    let timeLeft = timeLimit;
+    const display = document.getElementById('time-display');
+    const timerElement = document.getElementById('exam-timer');
+    
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        let minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+        
+        display.textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        
+        // Alert time logic
+        if (alertLimit && timeLeft <= alertLimit && timeLeft > alertLimit - 2) {
+            timerElement.style.color = '#ef4444'; // turn red
+            alert(`You have ${Math.floor(alertLimit / 60)} minutes remaining!`);
+        }
+        
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            alert("Time's up! Automatically submitting the Reading section.");
+            submitExam();
+        }
+    }, 1000);
+}
 
 function renderQuestion() {
     const q = questions[currentIndex];
     const container = document.getElementById('question-container');
     document.getElementById('current-q-num').textContent = currentIndex + 1;
     
-    // Manage buttons
-    document.getElementById('btn-back').disabled = currentIndex === 0;
+    let html = `<div class="question-prompt">${q.prompt}</div>`;
     
-    const btnNext = document.getElementById('btn-next');
-    if (currentIndex === questions.length - 1) {
-        btnNext.innerHTML = 'Submit Section <i data-lucide="check" style="width: 18px;"></i>';
-        btnNext.classList.replace('btn-primary', 'btn-outline'); // Make it look different for submit
-    } else {
-        btnNext.innerHTML = 'Next <i data-lucide="arrow-right" style="width: 18px;"></i>';
-        btnNext.classList.replace('btn-outline', 'btn-primary');
-    }
-
-    if (q.type === 'mcq') {
-        let optionsHtml = q.options.map((opt, i) => `
-            <li class="option-item">
-                <input type="radio" name="q${q.id}" id="opt${i}" value="${i}" style="display: none;">
-                <label class="option-label" for="opt${i}">
-                    <div style="width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--text-muted); display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0;">
-                        ${String.fromCharCode(65 + i)}
-                    </div>
-                    ${opt}
-                </label>
-            </li>
-        `).join('');
-
-        container.innerHTML = `
-            <h3 style="margin-bottom: 1.5rem; font-size: 20px;">${q.prompt}</h3>
-            <ul class="options-list">
-                ${optionsHtml}
-            </ul>
+    q.options.forEach((opt, index) => {
+        const isSelected = answers[currentIndex] === index ? 'checked' : '';
+        html += `
+            <label class="option">
+                <input type="radio" name="q${currentIndex}" value="${index}" ${isSelected} onclick="selectAnswer(${index})">
+                ${opt}
+            </label>
         `;
-    } else if (q.type === 'complete_words') {
-        container.innerHTML = `
-            <h3 style="margin-bottom: 1.5rem; font-size: 20px;">Task 1: Complete the Words</h3>
-            <p style="margin-bottom: 1rem; color: var(--text-muted);">${q.prompt}</p>
-            <div class="blanks-sentence" style="padding: 2rem; background-color: var(--bg-main); border-radius: 8px; border: 1px solid var(--border-color);">
-                ${q.sentence}
-            </div>
-        `;
-    }
+    });
     
-    lucide.createIcons();
+    container.innerHTML = html;
+    updateButtons();
+}
+
+function selectAnswer(index) {
+    answers[currentIndex] = index;
 }
 
 function navigate(direction) {
-    if (direction === 1 && currentIndex === questions.length - 1) {
-        submitSection();
-        return;
-    }
-    
     currentIndex += direction;
-    if (currentIndex < 0) currentIndex = 0;
-    if (currentIndex >= questions.length) currentIndex = questions.length - 1;
-    
     renderQuestion();
 }
 
-function startTimer() {
-    const display = document.getElementById('time-display');
-    const timerDiv = document.getElementById('exam-timer');
+function updateButtons() {
+    document.getElementById('btn-back').disabled = currentIndex === 0;
+    const nextBtn = document.getElementById('btn-next');
     
-    timerInterval = setInterval(() => {
-        timeRemaining--;
-        
-        let minutes = Math.floor(timeRemaining / 60);
-        let seconds = timeRemaining % 60;
-        
-        display.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-        
-        if (timeRemaining <= 60) {
-            timerDiv.style.background = 'rgba(229, 62, 62, 0.3)';
-            timerDiv.style.animation = 'pulse 1s infinite';
-        }
-        
-        if (timeRemaining <= 0) {
-            clearInterval(timerInterval);
-            submitSection(true);
-        }
-    }, 1000);
+    if (currentIndex === questions.length - 1) {
+        nextBtn.innerHTML = 'Submit <i data-lucide="check" style="width: 18px;"></i>';
+        nextBtn.onclick = submitExam;
+    } else {
+        nextBtn.innerHTML = 'Next <i data-lucide="arrow-right" style="width: 18px;"></i>';
+        nextBtn.onclick = () => navigate(1);
+    }
+    lucide.createIcons();
 }
 
-function submitSection(autoSubmit = false) {
+function submitExam() {
     clearInterval(timerInterval);
-    const msg = autoSubmit ? "Time is up! Section auto-submitted." : "Reading section submitted successfully!";
-    
-    // In real app, collect answers and POST to backend here.
+    // In reality: POST /api/exams/submit
     
     document.body.innerHTML = `
         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: var(--bg-main); color: var(--text-main); font-family: var(--font-main);">
             <i data-lucide="check-circle" style="width: 64px; height: 64px; color: #10b981; margin-bottom: 1rem;"></i>
-            <h1 style="margin-bottom: 1rem;">${msg}</h1>
+            <h1 style="margin-bottom: 1rem;">Reading Section Completed!</h1>
             <p style="color: var(--text-muted); margin-bottom: 2rem;">Moving you to the Listening Section...</p>
-            <a href="listening.html" class="btn btn-primary">Continue to Listening</a>
+            <a href="listening.html" class="btn btn-primary">Start Listening Section</a>
         </div>
     `;
     lucide.createIcons();
