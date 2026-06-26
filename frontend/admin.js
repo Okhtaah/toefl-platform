@@ -13,9 +13,14 @@ function switchTab(tabId) {
     if(tabId === 'users') fetchUsers();
 }
 
+function logout() {
+    localStorage.removeItem('token');
+    window.location.href = 'auth.html';
+}
+
 async function fetchUsers() {
     try {
-        const res = await fetch('http://localhost:5000/api/admin/users', {
+        const res = await fetch('/api/admin/users', {
             headers: { 'x-auth-token': localStorage.getItem('token') }
         });
         const users = await res.json();
@@ -38,7 +43,7 @@ async function fetchUsers() {
 }
 
 async function toggleRole(id, newRole) {
-    await fetch(`http://localhost:5000/api/admin/users/${id}/role`, {
+    await fetch(`/api/admin/users/${id}/role`, {
         method: 'PUT',
         headers: { 
             'Content-Type': 'application/json',
@@ -53,7 +58,7 @@ async function createCourse() {
     const title = document.getElementById('build-title').value;
     const type = document.getElementById('build-type').value;
     
-    await fetch(`http://localhost:5000/api/admin/courses`, {
+    await fetch(`/api/admin/courses`, {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json',

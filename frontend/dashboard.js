@@ -12,7 +12,7 @@ async function fetchDashboardData() {
         const token = localStorage.getItem('token');
         
         // Fetch User Progress
-        const progressRes = await fetch('http://localhost:5000/api/user/progress', {
+        const progressRes = await fetch('/api/user/progress', {
             headers: { 'x-auth-token': token }
         });
         const progress = await progressRes.json();
@@ -42,7 +42,7 @@ async function fetchDashboardData() {
         document.getElementById('materials-opened-count').textContent = progress.materials_opened || 0;
 
         // Fetch Available Courses
-        const coursesRes = await fetch('http://localhost:5000/api/user/courses', {
+        const coursesRes = await fetch('/api/user/courses', {
             headers: { 'x-auth-token': token }
         });
         const courses = await coursesRes.json();

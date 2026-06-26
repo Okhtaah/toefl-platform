@@ -204,7 +204,7 @@
             <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" aria-label="Toggle Dark Mode">
                 <i data-lucide="moon"></i>
             </button>
-            <a href="dashboard.html" class="btn btn-outline">Exit Admin</a>
+            <button class="btn btn-outline" onclick="logout()">Log Out</button>
         </nav>
     </header>
 
@@ -296,6 +296,56 @@
                     <input type="number" id="build-alert" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--bg-main); color: var(--text-main);" placeholder="e.g. 5">
                 </div>
                 <button class="btn btn-primary full-width" onclick="createCourse()"><i data-lucide="plus"></i> Create Block</button>
+            </div>
+        </main>
+
+        <!-- Access Codes Tab -->
+        <main class="admin-content tab-content" id="codes-tab" style="display: none;">
+            <h2>Access Codes</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Manage redemption codes for students to unlock materials or tests.</p>
+            
+            <div style="display: flex; gap: 2rem; align-items: flex-start;">
+                <!-- Form -->
+                <div style="background-color: var(--bg-secondary); padding: 2rem; border-radius: 12px; border: 1px solid var(--border-color); flex: 1;">
+                    <h3 style="margin-bottom: 1.5rem;">Generate Code</h3>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Code Phrase</label>
+                        <input type="text" id="code-phrase" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--bg-main); color: var(--text-main);" placeholder="e.g. VIP-READING-2026">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Target Type</label>
+                        <select id="code-type" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--bg-main); color: var(--text-main);">
+                            <option value="COURSE">Course / Mock Exam</option>
+                            <option value="MATERIAL">Material (PDF)</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Target ID (UUID)</label>
+                        <input type="text" id="code-target" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--bg-main); color: var(--text-main);" placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000">
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Max Uses</label>
+                        <input type="number" id="code-uses" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--bg-main); color: var(--text-main);" value="1">
+                    </div>
+                    <button class="btn btn-primary full-width" onclick="createAccessCode()"><i data-lucide="key"></i> Generate Code</button>
+                </div>
+
+                <!-- Table -->
+                <div style="flex: 2;">
+                    <table class="submissions-table">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Type</th>
+                                <th>Uses</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody id="codes-table-body">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </main>
 
