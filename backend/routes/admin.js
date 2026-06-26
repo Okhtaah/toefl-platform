@@ -113,4 +113,63 @@ router.put('/submissions/:id/grade', adminAuth, async (req, res) => {
     }
 });
 
+// Bulk Import Questions
+router.post('/questions/bulk', adminAuth, async (req, res) => {
+    try {
+        const { task_id, questions } = req.body;
+        
+        for (let i = 0; i < questions.length; i++) {
+            const q = questions[i];
+            const qResult = await db.query(
+                'INSERT INTO Questions (task_id, prompt, question_order) VALUES ($1, $2, $3) RETURNING id',
+                [task_id, q.prompt, i]
+            );
+            
+            const newQId = qResult.rows[0].id;
+            
+            if (q.options && Array.isArray(q.options)) {
+                for (let j = 0; j < q.options.length; j++) {
+                    await db.query(
+                        'INSERT INTO AnswerOptions (question_id, content, is_correct, option_order) VALUES ($1, $2, $3, $4)',
+                        [newQId, q.options[j], j === q.correct, j]
+                    );
+                }
+            }
+        }
+        res.json({ message: 'Bulk imported successfully' });
+    } catch(err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Fetch Questions with Search and Filter
+router.get('/questions', adminAuth, async (req, res) => {
+    try {
+        const { search, type } = req.query;
+        let query = `
+            SELECT q.id, q.prompt, t.task_type 
+            FROM Questions q 
+            JOIN Tasks t ON q.task_id = t.id 
+            WHERE 1=1
+        `;
+        const params = [];
+        
+        if (search) {
+            params.push(`%${search}%`);
+            query += ` AND q.prompt ILIKE $${params.length}`;
+        }
+        if (type) {
+            params.push(type);
+            query += ` AND t.task_type = $${params.length}`;
+        }
+        
+        query += ' ORDER BY q.id DESC LIMIT 50';
+        
+        const result = await db.query(query, params);
+        res.json(result.rows);
+    } catch(err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 module.exports = router;

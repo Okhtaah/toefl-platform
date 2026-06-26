@@ -11,6 +11,7 @@ function switchTab(tabId) {
     event.currentTarget.classList.add('active');
 
     if(tabId === 'users') fetchUsers();
+    if(tabId === 'codes') fetchCodes();
 }
 
 function logout() {
@@ -57,6 +58,8 @@ async function toggleRole(id, newRole) {
 async function createCourse() {
     const title = document.getElementById('build-title').value;
     const type = document.getElementById('build-type').value;
+    const timeLimit = document.getElementById('build-time').value;
+    const alertTime = document.getElementById('build-alert').value;
     
     await fetch(`/api/admin/courses`, {
         method: 'POST',
@@ -64,9 +67,121 @@ async function createCourse() {
             'Content-Type': 'application/json',
             'x-auth-token': localStorage.getItem('token') 
         },
-        body: JSON.stringify({ title, course_type: type })
+        body: JSON.stringify({ title, course_type: type, timeLimit, alertTime })
     });
     alert("Course Block created successfully in DB!");
+}
+
+async function fetchCodes() {
+    try {
+        const res = await fetch('/api/admin/codes', {
+            headers: { 'x-auth-token': localStorage.getItem('token') }
+        });
+        const codes = await res.json();
+        
+        const tbody = document.getElementById('codes-table-body');
+        if(codes.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No access codes generated yet.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = codes.map(c => `
+            <tr>
+                <td style="font-weight: 600;">${c.code}</td>
+                <td>${c.target_type}</td>
+                <td>
+                    <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: 4px; height: 8px; width: 100%; overflow: hidden; margin-top: 4px;">
+                        <div style="background: var(--primary-color); height: 100%; width: ${(c.current_uses / c.max_uses) * 100}%;"></div>
+                    </div>
+                    <span style="font-size: 12px; color: var(--text-muted);">${c.current_uses} / ${c.max_uses} uses</span>
+                </td>
+                <td style="color: var(--text-muted); font-size: 13px;">${new Date(c.created_at).toLocaleDateString()}</td>
+            </tr>
+        `).join('');
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+async function createAccessCode() {
+    const code = document.getElementById('code-phrase').value;
+    const target_type = document.getElementById('code-type').value;
+    const target_id = document.getElementById('code-target').value;
+    const max_uses = document.getElementById('code-uses').value;
+    
+    try {
+        const res = await fetch(`/api/admin/codes`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'x-auth-token': localStorage.getItem('token') 
+            },
+            body: JSON.stringify({ code, target_type, target_id, max_uses })
+        });
+        if(res.ok) {
+            fetchCodes();
+            document.getElementById('code-phrase').value = '';
+            document.getElementById('code-target').value = '';
+        } else {
+            alert('Failed to create code. Check if UUID is valid.');
+        }
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+async function importBulkQuestions() {
+    const taskId = document.getElementById('bulk-task-id').value;
+    const jsonStr = document.getElementById('bulk-json').value;
+    
+    if(!taskId || !jsonStr) {
+        alert("Please provide both Task ID and JSON data.");
+        return;
+    }
+    
+    try {
+        const questions = JSON.parse(jsonStr);
+        const res = await fetch(`/api/admin/questions/bulk`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'x-auth-token': localStorage.getItem('token') 
+            },
+            body: JSON.stringify({ task_id: taskId, questions })
+        });
+        
+        if(res.ok) {
+            alert('Bulk import successful!');
+            document.getElementById('bulk-json').value = '';
+            fetchQuestions();
+        } else {
+            alert('Failed to import.');
+        }
+    } catch(e) {
+        alert("Invalid JSON format.");
+        console.error(e);
+    }
+}
+
+async function fetchQuestions() {
+    const search = document.getElementById('q-search').value;
+    const type = document.getElementById('q-filter').value;
+    
+    try {
+        const res = await fetch(`/api/admin/questions?search=${encodeURIComponent(search)}&type=${type}`, {
+            headers: { 'x-auth-token': localStorage.getItem('token') }
+        });
+        const questions = await res.json();
+        
+        const list = document.getElementById('questions-list');
+        list.innerHTML = questions.map(q => `
+            <div style="background-color: var(--bg-secondary); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                <div style="font-size: 12px; color: var(--primary-color); font-weight: 600; margin-bottom: 4px;">${q.task_type}</div>
+                <div style="font-weight: 600;">${q.prompt}</div>
+            </div>
+        `).join('');
+    } catch(e) {
+        console.error(e);
+    }
 }
 
 function openGrading(type) {
