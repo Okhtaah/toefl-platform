@@ -386,3 +386,89 @@ h1, h2, h3, h4 {
     gap: 1rem;
     margin-top: 2rem;
 }
+
+/* ---- MIGRATED TAILWIND UTILITIES FROM PROJECT A ---- */
+
+/* Gradients */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, rgba(148, 189, 255, 0.15) 0%, rgba(148, 189, 255, 0.05) 50%, transparent 100%);
+}
+.bg-gradient-banner {
+    background: linear-gradient(to right, rgba(148, 189, 255, 0.1) 0%, rgba(148, 189, 255, 0.05) 50%, transparent 100%);
+    border: 1px solid rgba(148, 189, 255, 0.2);
+}
+[data-theme="dark"] .bg-gradient-primary {
+    background: linear-gradient(135deg, rgba(0, 79, 146, 0.15) 0%, rgba(0, 79, 146, 0.05) 50%, transparent 100%);
+}
+[data-theme="dark"] .bg-gradient-banner {
+    background: linear-gradient(to right, rgba(0, 79, 146, 0.1) 0%, rgba(0, 79, 146, 0.05) 50%, transparent 100%);
+    border: 1px solid rgba(0, 79, 146, 0.2);
+}
+
+/* Glassmorphism */
+.backdrop-blur {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background-color: rgba(255, 255, 255, 0.8);
+}
+[data-theme="dark"] .backdrop-blur {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Rounded Corners & Shadows */
+.rounded-2xl {
+    border-radius: 1rem;
+}
+.rounded-3xl {
+    border-radius: 1.5rem;
+}
+.shadow-xl {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+[data-theme="dark"] .shadow-xl {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+}
+.shadow-2xl {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+[data-theme="dark"] .shadow-2xl {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+}
+
+/* Typography Overrides */
+.tracking-tighter {
+    letter-spacing: -0.05em;
+}
+.text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+.text-6xl { font-size: 3.75rem; line-height: 1; }
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes slideInFromBottom {
+    from { transform: translateY(1rem); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+@keyframes zoomIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+.animate-in {
+    animation: fadeIn 0.5s ease-out forwards, slideInFromBottom 0.5s ease-out forwards;
+}
+.zoom-in {
+    animation: fadeIn 0.3s ease-out forwards, zoomIn 0.3s ease-out forwards;
+}
+
+/* Hover Scaling */
+.hover-scale {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hover-scale:hover {
+    transform: translateY(-4px);
+}
+.group-hover-scale:hover .scale-target {
+    transform: scale(1.1);
+}

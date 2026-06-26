@@ -25,62 +25,90 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <nav class="sidebar-nav">
-                <a href="#" class="sidebar-link active"><i data-lucide="layout-dashboard"></i> Dashboard</a>
-                <a href="#" class="sidebar-link"><i data-lucide="book-open"></i> Full Mock Exams</a>
+                <a href="dashboard.html" class="sidebar-link active"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+                <a href="reading.html" class="sidebar-link"><i data-lucide="book-open"></i> Full Mock Exams</a>
                 <a href="#" class="sidebar-link"><i data-lucide="pencil"></i> Practice Sections</a>
-                <a href="#" class="sidebar-link"><i data-lucide="file-text"></i> PDF Materials</a>
-                <a href="#" class="sidebar-link"><i data-lucide="message-circle"></i> Messages</a>
+                <a href="materials.html" class="sidebar-link"><i data-lucide="file-text"></i> PDF Materials</a>
+                <a href="messages.html" class="sidebar-link"><i data-lucide="message-circle"></i> Messages</a>
             </nav>
         </aside>
 
         <!-- Main Content -->
-        <main class="dashboard-content">
-            <div class="dashboard-header">
-                <div>
-                    <h2>Welcome back!</h2>
-                    <p style="color: var(--text-muted)">Continue your TOEFL preparation journey.</p>
-                </div>
-                <button class="btn btn-primary" onclick="openModal()">
+        <main class="dashboard-content animate-in">
+            <!-- Welcome Banner -->
+            <div class="bg-gradient-banner rounded-2xl p-8 shadow-sm" style="margin-bottom: 2rem; padding: 2rem;">
+                <h1 style="font-size: 1.875rem; font-weight: 700; margin-bottom: 0.5rem;">
+                    Welcome back, <span style="color: var(--primary-color);" id="user-email-display">Student</span>! 👋
+                </h1>
+                <p style="color: var(--text-muted); font-size: 1.125rem;">
+                    Ready to continue your TOEFL preparation? You have access to the materials below.
+                </p>
+                <button class="btn btn-primary shadow-sm hover-scale" onclick="openModal()" style="margin-top: 1rem;">
                     <i data-lucide="key"></i> Redeem Access Code
                 </button>
             </div>
 
-            <div class="dashboard-grid">
-                <!-- Progress & Notifications -->
-                <div class="card" style="grid-column: span 2;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3><i data-lucide="bell" style="color: var(--primary-color)"></i> Notifications</h3>
-                        <span class="badge-danger" id="notif-count">0 Unread</span>
+            <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem;">
+                
+                <!-- Advanced Grid Layout: Courses vs Practice -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                    
+                    <!-- Course Cards Container (Injected by JS) -->
+                    <div id="course-cards-container" style="grid-column: span 2; display: flex; flex-direction: column; gap: 1.5rem;">
+                        <div class="skeleton rounded-2xl" style="height: 250px; width: 100%;"></div>
+                        <div class="skeleton rounded-2xl" style="height: 250px; width: 100%;"></div>
                     </div>
-                    <div id="notifications-list" style="max-height: 150px; overflow-y: auto;">
-                        <div class="skeleton" style="height: 40px; margin-bottom: 8px;"></div>
-                        <div class="skeleton" style="height: 40px;"></div>
+
+                    <!-- Quick Practice Module -->
+                    <div class="card shadow-sm hover-scale group" style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 1rem;">Quick Practice</h3>
+                            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem;">Target specific skills before taking a full mock exam.</p>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <button class="btn btn-outline hover-scale group-hover-scale" style="justify-content: flex-start; width: 100%; border-radius: 0.75rem;">
+                                    <i data-lucide="headphones" class="scale-target" style="color: var(--primary-color);"></i> Listening Drills
+                                </button>
+                                <button class="btn btn-outline hover-scale group-hover-scale" style="justify-content: flex-start; width: 100%; border-radius: 0.75rem;">
+                                    <i data-lucide="pen-tool" class="scale-target" style="color: var(--primary-color);"></i> Writing Prompts
+                                </button>
+                                <button class="btn btn-outline hover-scale group-hover-scale" style="justify-content: flex-start; width: 100%; border-radius: 0.75rem;">
+                                    <i data-lucide="mic" class="scale-target" style="color: var(--primary-color);"></i> Speaking Tasks
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card">
-                    <h3><i data-lucide="unlock" style="color: var(--primary-color)"></i> Unlocked Access</h3>
-                    <ul style="list-style-type: none;" id="access-list">
-                        <div class="skeleton" style="height: 20px; margin-bottom: 8px;"></div>
-                        <div class="skeleton" style="height: 20px;"></div>
-                    </ul>
-                </div>
+                <!-- Notifications & Progress -->
+                <div class="dashboard-grid">
+                    <!-- Progress & Notifications -->
+                    <div class="card" style="grid-column: span 2;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3><i data-lucide="bell" style="color: var(--primary-color)"></i> Notifications</h3>
+                            <span class="badge-danger" id="notif-count">0 Unread</span>
+                        </div>
+                        <div id="notifications-list" style="max-height: 150px; overflow-y: auto;">
+                            <div class="skeleton" style="height: 40px; margin-bottom: 8px;"></div>
+                            <div class="skeleton" style="height: 40px;"></div>
+                        </div>
+                    </div>
 
-                <div class="card" style="grid-column: span 2;">
-                    <h3><i data-lucide="zap" style="color: var(--primary-color)"></i> Available Tests</h3>
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap;" id="quick-actions">
-                        <div class="skeleton" style="height: 40px; width: 100%;"></div>
+                    <div class="card">
+                        <h3><i data-lucide="trending-up" style="color: var(--primary-color)"></i> Last Test Taken</h3>
+                        <div id="recent-scores">
+                            <div class="skeleton" style="height: 60px;"></div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card">
-                    <h3><i data-lucide="trending-up" style="color: var(--primary-color)"></i> Last Test Taken</h3>
-                    <div id="recent-scores">
-                        <div class="skeleton" style="height: 60px;"></div>
-                    </div>
-                </div>
             </div>
         </main>
+
+        <!-- Floating WhatsApp Button -->
+        <a href="https://wa.me/1234567890" target="_blank" class="hover-scale" style="position: fixed; bottom: 2rem; right: 2rem; background-color: #25D366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4); z-index: 100;" aria-label="Chat on WhatsApp">
+            <i data-lucide="message-circle" style="width: 32px; height: 32px;"></i>
+        </a>
     </div>
 
     <!-- Custom HTML Modal -->

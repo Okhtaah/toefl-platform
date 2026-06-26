@@ -35,10 +35,15 @@ function startAudio() {
     const btn = document.getElementById('start-audio-btn');
     const waves = document.getElementById('waves');
     
-    btn.style.display = 'none';
+    // PRD: Audio plays ONCE only — disable button immediately
+    btn.disabled = true;
+    btn.innerHTML = '<i data-lucide="volume-2" style="width: 18px;"></i> Playing... (cannot replay)';
+    btn.style.opacity = '0.6';
+    btn.style.cursor = 'not-allowed';
     waves.classList.remove('audio-paused');
+    lucide.createIcons();
     
-    // Simulate audio playing for 5 seconds (Instead of real audio for mock)
+    // Simulate audio playing for 5 seconds (replace with real Audio() in production)
     setTimeout(() => {
         waves.classList.add('audio-paused');
         document.getElementById('audio-player').style.display = 'none';

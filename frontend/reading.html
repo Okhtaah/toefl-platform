@@ -21,18 +21,34 @@
     </header>
 
     <main class="exam-layout">
-        <!-- Pre-Test Info Screen -->
-        <div id="pre-test-screen" style="width: 100%; max-width: 600px; margin: 4rem auto; background-color: var(--bg-secondary); padding: 3rem; border-radius: 12px; border: 1px solid var(--border-color); text-align: center;">
-            <i data-lucide="clock" style="width: 64px; height: 64px; color: var(--primary-color); margin-bottom: 1.5rem;"></i>
-            <h2 id="pre-test-title" style="margin-bottom: 1rem;">Loading Exam...</h2>
-            <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 18px;">
-                Time Limit: <strong id="pre-test-time" style="color: var(--text-main);">--</strong> minutes<br>
-                Warning Alert: <strong id="pre-test-alert" style="color: var(--text-main);">--</strong> minutes remaining
-            </p>
-            <div class="alert" style="display: block; margin-bottom: 2rem; background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; border-color: #f59e0b;">
-                <strong>Important:</strong> Do not refresh the page once the exam begins.
+        <!-- Pre-Test Info Screen (Modal UI) -->
+        <div id="pre-test-screen" class="animate-in" style="position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 1rem;">
+            <div class="bg-white dark:bg-black rounded-3xl p-8 max-w-md w-full shadow-2xl zoom-in" style="background-color: var(--bg-main); border: 1px solid var(--border-color);">
+                <div style="display: flex; align-items: center; justify-content: center; width: 64px; height: 64px; background-color: rgba(245, 158, 11, 0.2); color: #f59e0b; border-radius: 50%; margin: 0 auto 1.5rem auto;">
+                    <i data-lucide="alert-triangle" style="width: 32px; height: 32px;"></i>
+                </div>
+                
+                <h2 style="font-size: 1.5rem; font-weight: 700; text-align: center; margin-bottom: 0.5rem;" id="pre-test-title">Ready to Start?</h2>
+                
+                <div style="background-color: var(--bg-secondary); border-radius: 0.75rem; padding: 1rem; margin-bottom: 1.5rem;">
+                    <p style="color: var(--text-muted); text-align: center; margin-bottom: 0.75rem;">This section operates under strict exam conditions.</p>
+                    <ul style="list-style: none; font-size: 0.875rem; font-weight: 600; display: flex; flex-direction: column; gap: 0.5rem;">
+                        <li style="display: flex; align-items: center; justify-content: space-between; color: #d97706; background-color: rgba(245, 158, 11, 0.1); padding: 0.5rem 0.75rem; border-radius: 0.5rem;">
+                            <span style="display: flex; align-items: center; gap: 0.5rem;"><i data-lucide="clock" style="width: 16px;"></i> Time Limit</span>
+                            <span><span id="pre-test-time">--</span> Minutes</span>
+                        </li>
+                        <li style="display: flex; align-items: center; justify-content: space-between; background-color: var(--bg-main); padding: 0.5rem 0.75rem; border-radius: 0.5rem;">
+                            <span>Auto-Submit</span>
+                            <span>Enabled</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn btn-outline" style="flex: 1; justify-content: center; font-weight: 700;" onclick="window.location.href='dashboard.html'">Cancel</button>
+                    <button class="btn btn-primary shadow-lg hover-scale" id="start-exam-btn" style="flex: 1; justify-content: center; font-weight: 700;" onclick="startActualExam()" disabled>Loading...</button>
+                </div>
             </div>
-            <button class="btn btn-primary" style="font-size: 18px; padding: 12px 32px;" onclick="startActualExam()" id="start-exam-btn" disabled>Loading...</button>
         </div>
 
         <!-- Actual Exam View -->

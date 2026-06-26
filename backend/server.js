@@ -15,12 +15,14 @@ const codeRoutes = require('./routes/codes');
 const adminRoutes = require('./routes/admin');
 const userRoutes = require('./routes/user');
 const examsRoutes = require('./routes/exams');
+const messagesRoutes = require('./routes/messages');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/codes', codeRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/exams', examsRoutes);
+app.use('/api/messages', messagesRoutes);
  
 // Basic Route
 app.get('/api/health', (req, res) => {

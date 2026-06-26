@@ -116,15 +116,27 @@ function renderQuestion() {
     
     let html = `<div class="question-prompt">${q.prompt}</div>`;
     
-    q.options.forEach((opt, index) => {
-        const isSelected = answers[currentIndex] === index ? 'checked' : '';
+    // Check if it's MCQ or Fill in Blanks based on presence of options
+    // Assuming PRD "Complete the Words" has no options
+    if (q.options && q.options.length > 0) {
+        q.options.forEach((opt, index) => {
+            const isSelected = answers[currentIndex] === index ? 'checked' : '';
+            html += `
+                <label class="option hover-scale" style="transition: border-color 0.2s, background-color 0.2s;">
+                    <input type="radio" name="q${currentIndex}" value="${index}" ${isSelected} onclick="selectAnswer(${index})">
+                    ${opt}
+                </label>
+            `;
+        });
+    } else {
+        // Fill in Blanks
+        const currentAns = answers[currentIndex] || '';
         html += `
-            <label class="option">
-                <input type="radio" name="q${currentIndex}" value="${index}" ${isSelected} onclick="selectAnswer(${index})">
-                ${opt}
-            </label>
+            <div style="margin-top: 1rem;">
+                <input type="text" id="blank-input" value="${currentAns}" oninput="selectTextAnswer(this.value)" placeholder="Type your exact answer here..." style="width: 100%; padding: 12px; font-size: 16px; border: 2px solid var(--border-color); border-radius: 8px; background-color: var(--bg-main); color: var(--text-main);">
+            </div>
         `;
-    });
+    }
     
     container.innerHTML = html;
     renderGrid(); // update grid colors
@@ -133,6 +145,11 @@ function renderQuestion() {
 
 function selectAnswer(index) {
     answers[currentIndex] = index;
+    renderGrid(); // Update immediately to turn box green
+}
+
+function selectTextAnswer(value) {
+    answers[currentIndex] = value;
     renderGrid(); // Update immediately to turn box green
 }
 
